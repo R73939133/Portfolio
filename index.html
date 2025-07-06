@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .profile-picture {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            padding: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #999;
+        }
+
+        .name {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bio {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            margin-bottom: 40px;
+        }
+
+        .gallery-title {
+            font-size: 2.5rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #4ecdc4, #45b7d1);
+            background-size: 400% 400%;
+            animation: gradientShift 6s ease infinite;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .gallery-item.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .overlay-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .overlay-category {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ff6b6b;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .name {
+                font-size: 2rem;
+            }
+            
+            .bio {
+                font-size: 1rem;
+                padding: 15px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+
+            .category-filter {
+                gap: 10px;
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="profile-picture">
+                <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/481287927_619739957341911_479194583749840296_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEtvt7vZNasGfB5SDSWociJ22B_rUelWq7bYH-tR6VaruVUrWydZ1MNaaoeqcWI4Iz_y7l815gRAi5YnLnQpfb0&_nc_ohc=REkefdFi0AUQ7kNvwF6J4cH&_nc_oc=AdlVxBJIQb30DNfrYXIc7-UXGKqmdnPBhCD0OnywLCiLqXCw1XU6_hVEpKyzXzh8r8I&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=-QZ_2pYFuBIeoo_4qHFtAQ&oh=00_AfTJdh-dInuQOrVzNrAD9u0nwdyPsQkz7WpDhwbOu1gslQ&oe=68706C7B" alt="Profile Picture">
+            </div>
+            <h1 class="name">Athai Sarker</h1>
+            <p class="bio">
+                Hi, I'm Athai Sarker. Welcome to my portfolio! I'm from Betagi, Borguna, now living in Dhaka, Bangladesh. I love cooking, traveling, and discovering new places and flavors. Thanks for visiting my site!
+            </p>
+        </header>
+        <!-- Gallery Section -->
+        <section class="gallery-section">
+            <h2 class="gallery-title">
+              <span style="background: linear-gradient(45deg, #ffd93d, #ff6b6b, #4ecdc4); 
+                     background-clip: text; 
+                     -webkit-background-clip: text; 
+                     color: transparent; 
+                     -webkit-text-fill-color: transparent; 
+                     padding: 0 18px;">
+                My Photo's
+              </span>
+            </h2></h2>
+            <div class="gallery">
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/481287927_619739957341911_479194583749840296_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEtvt7vZNasGfB5SDSWociJ22B_rUelWq7bYH-tR6VaruVUrWydZ1MNaaoeqcWI4Iz_y7l815gRAi5YnLnQpfb0&_nc_ohc=REkefdFi0AUQ7kNvwF6J4cH&_nc_oc=AdlVxBJIQb30DNfrYXIc7-UXGKqmdnPBhCD0OnywLCiLqXCw1XU6_hVEpKyzXzh8r8I&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=-QZ_2pYFuBIeoo_4qHFtAQ&oh=00_AfTJdh-dInuQOrVzNrAD9u0nwdyPsQkz7WpDhwbOu1gslQ&oe=68706C7B" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/506308398_691661383483101_1174374451989899937_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeH6C7oBot3BLcFdvI-SYg3zlV2dnfmwv9-VXZ2d-bC_3_B1TiwfDEHfSapTuVwWohIf81ZoGpJgOwdFiYOmfDeR&_nc_ohc=I4jvpJUQue0Q7kNvwGc-heZ&_nc_oc=AdkG04GZ59JdkLcOHPmO62j9t8h7ncu254YvsOLWWY_Fc0x61Hp_V13sCuO1GU_FRO0&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=OLXvXKIbNIOvQc-2QeEJmw&oh=00_AfSA-aqkLWUyoUkga3K6sR3sqlLXS1rDPMYCgabTOeimCA&oe=687068AC" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/476835276_605053255477248_1440010577002023418_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEaYTS3Z1EOkVZgDow6Jwois-c1DhmsATaz5zUOGawBNs7aF99dtda7lEtD0R_wMX3yfzgfwLlUdBR0DQgUKS6G&_nc_ohc=Aw8ZF6TyIaQQ7kNvwFQpI8_&_nc_oc=Adk02iD60B2aw2uNhJ3u0QFZ1wRuDuE6tNAa80XhkdVOzZ_5lcbN28qgw3zOOzT50pA&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=7zKs2iFjzb702YDKo_u3UQ&oh=00_AfQ1AuxqJef0_PhrM6xf3t4PCtlqYJ_cuZCkLcouryDN8g&oe=68706023" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/484181084_628861756429731_2240696565990772967_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEVr37aK2SlaMZpvxaGp-B3vVmNFJhdBEu9WY0UmF0ES-blWODA6PMIl-B_HltTW-Sinf7kBNXaFoCnmgkb3qfa&_nc_ohc=X4wV0370SuAQ7kNvwEciF_v&_nc_oc=AdnYXwJ8PlPVksVykIySFNjDc_sJbDz7_5PpyyEc8r8jeSEvr2Poa0dMZ0row1xGFmQ&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=mw-bDovmdloXGSnmrWhqmg&oh=00_AfRTTdL7TmUoNop0ocySSYU2_RlGJbGMIyIfkP6BI8OSzA&oe=687060AD" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/481153910_619742390675001_2340534720206456164_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeG3pgfW3RcHepdSJ3jIJCM3JcBRm9tv210lwFGb22_bXd7q0ZSZMryadk1srHc0xl4xU67E_FRHiOMWjD9LZrV0&_nc_ohc=IH3neHr55ngQ7kNvwGIYuud&_nc_oc=AdnQtSDATxAQr-VGYWjR1TSZBBZnSG1b9M7r86D28ElUJOhjn_0Vuc9ynHR3abM_7QM&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=xbosDq-je6QrRrdNIvSjaw&oh=00_AfTAa5kXikOe0pWgwHX3_jpi3GoUJhBI7T9kUq1qLOenVg&oe=687071C6" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/481326576_617710650878175_1654946726846495238_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFcCwHIkak2u-Hbe5bCH7QE3ApoUDBh4hDcCmhQMGHiELngsw7bXJh_ZfJkQ-igZ_4hGdV9JkMJYqmon67LAMDs&_nc_ohc=_fXvb485B1YQ7kNvwGv2y12&_nc_oc=AdlrWuJDGgPZ8V-d9nKm4U4bwMznbUo6GAXEPgOOpjF6NUUNgpLT6gogfk42gbADLqA&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=39W_OTW9dzs7jFddvB5qNg&oh=00_AfQRDwD_js2uVEAHJRAtO1IRXedu6V3V2d2T1f7AvdddRg&oe=68706D77" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/481317577_619162580732982_6253843011942502302_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEGZY-7xZf4ox_M1Ia7YmJiaAot6_NsgYdoCi3r82yBh6xKUHOU0_3AcOJVqNsre7cf7_iu1eN-0t7Q8-6EPVr7&_nc_ohc=O53am_SMI5sQ7kNvwHKSDZx&_nc_oc=AdlwavvTGoVuA8iGnehQfPkdZocK460y5lP6X0pW4onx2u7lt9OugJZAQqMt2iiycxY&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=2WP_JaRRrQLe741RvNzQmQ&oh=00_AfRbCMZqkJyqDyUOPNC8KyqedcB9H9W2HGN_T1R40AKa3A&oe=68708280" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/505945942_691661290149777_8745431411283473983_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeH7u0U1vNENjUn2iB1rK6YbU4t2176kFqNTi3bXvqQWo4DeUmzdNszevx4C3lr9qBndrQbSL91Rbw8ajx2wBF5e&_nc_ohc=VFr0JdCkLhkQ7kNvwGLtmv-&_nc_oc=AdnD9pEFeLM5sHtSWcWy7QVLeQF5w7cXC_npFOHqr3p7f7Wl4Qtt1d3KJcc8zsMqix4&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=aJF9ZM3QnQvRUD9vNj4nvA&oh=00_AfQEWfPxR5b0corPUE_Es4nIhfwTN-3EXQ4Xi13HqF6zsw&oe=68706E78" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="portraits" onclick="openModal(this)">
+                    <img src="https://scontent.fjsr15-1.fna.fbcdn.net/v/t39.30808-6/484748214_628892356426671_2540064021234650004_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHr6f9SDIEzXs__PZtPypnKfwGVIkqTf-F_AZUiSpN_4VDzA4KHtk6k9j-iNVnE4sE9Bx0T24YZMp4UVPDlfLSv&_nc_ohc=7PGQhwOKHqwQ7kNvwGGcsse&_nc_oc=Adl9PqC8RbMHy16uK130mO6eQbMJq_k186BAxT7QXxxK2Ov1s7PCRxTZmXfv0OpXGvo&_nc_zt=23&_nc_ht=scontent.fjsr15-1.fna&_nc_gid=5AuuB3VaoHYIcDz_rQALVQ&oh=00_AfQHluv8GLMAgGD4vCztq2p762iWcG5sqzUDbYhoomgg6Q&oe=68705004" alt="Portrait Photography">
+                    <div class="gallery-overlay">
+                        <!-- <div class="overlay-title">Self Portrait</div>
+                        <div class="overlay-category">Portraits</div> -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer style="text-align:center; padding:30px 0 10px 0; color:rgba(255,255,255,0.7); font-size:1rem; letter-spacing:1px;">
+          &copy; 2025 Athai Sarker &mdash; All rights reserved.<br>
+          <span style="font-size:0.95em;">Follow me on 
+            <a href="https://www.facebook.com/athai.sarkar.860772" target="_blank" style="color:#ffd93d; text-decoration:none;">Facebook</a>
+          </span>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Enlarged view">
+        </div>
+    </div>
+
+    <script>
+        // Photo categories data
+        const photos = document.querySelectorAll('.gallery-item');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // Category filter functionality
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+                
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filter photos
+                photos.forEach(photo => {
+                    if (category === 'all' || photo.dataset.category === category) {
+                        photo.classList.remove('hidden');
+                    } else {
+                        photo.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Modal functionality
+        function openModal(element) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const img = element.querySelector('img');
+            
+            modalImage.src = img.src;
+            modalImage.alt = img.alt;
+            modal.style.display = 'block';
+            
+            // Smooth fade in
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Smooth scrolling for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth reveal animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe gallery items
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                observer.observe(item);
+            });
+        });
+
+        // Add floating particles effect
+        function createParticles() {
+            const particleCount = 30;
+            const particles = [];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '1';
+                document.body.appendChild(particle);
+                
+                particles.push({
+                    element: particle,
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+            
+            function animateParticles() {
+                particles.forEach(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    if (particle.x < 0 || particle.x > window.innerWidth) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > window.innerHeight) particle.vy *= -1;
+                    
+                    particle.element.style.left = particle.x + 'px';
+                    particle.element.style.top = particle.y + 'px';
+                });
+                
+                requestAnimationFrame(animateParticles);
+            }
+            
+            animateParticles();
+        }
+        
+        // Initialize particles
+        createParticles();
+    </script>
+</body>
+</html>
